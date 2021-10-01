@@ -29,16 +29,35 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Singleton;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
 
 @Singleton
-public class CesAccessValidator {
+class CesAccessValidator {
 
   private static final Logger LOG = LoggerFactory.getLogger(CesAccessValidator.class);
 
+  private final Runtime runtime;
+  private final String configurationKey;
+
   private String apiToken;
+
+  CesAccessValidator() {
+    this(Runtime.getRuntime(), getConfigurationKey());
+  }
+
+  private static String getConfigurationKey() {
+    String configurationKey = System.getenv("CES_TOKEN_CONFIGURATION_KEY");
+    if (configurationKey == null) {
+      LOG.error("Could not read name of configuration key for token from environment");
+    }
+    return configurationKey;
+  }
+
+  CesAccessValidator(Runtime runtime, String configurationKey) {
+    this.runtime = runtime;
+    this.configurationKey = configurationKey;
+  }
 
   void checkToken(String apiToken) {
     assertTokenRead();
@@ -63,13 +82,27 @@ public class CesAccessValidator {
   }
 
   private void readToken() {
+    if (configurationKey == null) {
+      LOG.error("Could not read name of configuration key for token from environment");
+      return;
+    }
+    readToken(configurationKey);
+  }
+
+  private void readToken(String configurationKey) {
     try {
       LOG.info("Reading ces serviceaccount access token from doguctl");
-      Process process = Runtime.getRuntime().exec(new String[]{"doguctl", "config", "--encrypted", "serviceaccount_token"});
+      Process process = runtime.exec(new String[]{"doguctl", "config", "--encrypted", configurationKey});
       InputStream inputStream = process.getInputStream();
-      apiToken = new Scanner(inputStream, "UTF-8").nextLine();
-      LOG.info("Found ces serviceaccount access token");
-    } catch (IOException e) {
+      String processOut = new Scanner(inputStream, "UTF-8").nextLine();
+      int exitValue = process.exitValue();
+      if (exitValue == 0) {
+        LOG.info("Found ces serviceaccount access token");
+        apiToken = processOut;
+      } else {
+        LOG.error("got non-zero exit value ({}) from doguctl call", exitValue);
+      }
+    } catch (Exception e) {
       LOG.error("Could not read token from doguctl", e);
     }
   }

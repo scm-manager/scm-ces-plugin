@@ -66,7 +66,6 @@ class ServiceAccountResourceTest {
   void mockDispatcher() {
     dispatcher.addSingletonResource(resource);
     dispatcher.putDefaultContextObject(HttpServletRequest.class, servletRequest);
-
   }
 
   @Test
