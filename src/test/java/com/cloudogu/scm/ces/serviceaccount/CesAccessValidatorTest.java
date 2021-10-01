@@ -34,9 +34,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -66,11 +68,13 @@ class CesAccessValidatorTest {
 
       when(runtime.exec(new String[]{"doguctl", "config", "--encrypted", "token"}))
         .thenReturn(process);
+      when(process.getOutputStream())
+        .thenReturn(mock(OutputStream.class));
     }
 
     @Test
-    void shouldAlwaysFailIfDoguctlExitsWithNonZero() {
-      when(process.exitValue()).thenReturn(1);
+    void shouldAlwaysFailIfDoguctlExitsWithNonZero() throws InterruptedException {
+      when(process.waitFor()).thenReturn(1);
       when(process.getInputStream())
         .thenReturn(new ByteArrayInputStream("no value provided for key 'token': no default value was provided".getBytes(StandardCharsets.UTF_8)));
 
@@ -92,13 +96,15 @@ class CesAccessValidatorTest {
   class WithCorrectConfiguration {
 
     @BeforeEach
-    void initValidator() throws IOException {
+    void initValidator() throws IOException, InterruptedException {
       validator = new CesAccessValidator(runtime, "token");
       when(runtime.exec(new String[]{"doguctl", "config", "--encrypted", "token"}))
         .thenReturn(process);
       when(process.getInputStream())
         .thenReturn(new ByteArrayInputStream("valid".getBytes(StandardCharsets.UTF_8)));
-      when(process.exitValue()).thenReturn(0);
+      when(process.getOutputStream())
+        .thenReturn(mock(OutputStream.class));
+      when(process.waitFor()).thenReturn(0);
     }
 
     @Test

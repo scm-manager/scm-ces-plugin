@@ -29,8 +29,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Singleton;
+import java.io.BufferedReader;
 import java.io.InputStream;
-import java.util.Scanner;
+import java.io.InputStreamReader;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Singleton
 class CesAccessValidator {
@@ -91,14 +94,18 @@ class CesAccessValidator {
 
   private void readToken(String configurationKey) {
     try {
-      LOG.info("Reading ces serviceaccount access token from doguctl");
+      LOG.info("Reading ces serviceaccount access token from doguctl with configuration key {}", configurationKey);
       Process process = runtime.exec(new String[]{"doguctl", "config", "--encrypted", configurationKey});
+      LOG.trace("Started process");
+      process.getOutputStream().close();
+      LOG.trace("Closed out");
       InputStream inputStream = process.getInputStream();
-      String processOut = new Scanner(inputStream, "UTF-8").nextLine();
-      int exitValue = process.exitValue();
+      LOG.trace("Got input");
+      String processOut = new BufferedReader(new InputStreamReader(inputStream, UTF_8)).readLine();
+      int exitValue = process.waitFor();
       if (exitValue == 0) {
-        LOG.info("Found ces serviceaccount access token");
         apiToken = processOut;
+        LOG.info("Found ces serviceaccount access token");
       } else {
         LOG.error("got non-zero exit value ({}) from doguctl call", exitValue);
       }
