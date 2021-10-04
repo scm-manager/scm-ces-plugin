@@ -71,7 +71,10 @@ public class CesTokenRealm extends AuthorizingRealm {
       SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
       authorizationInfo.addStringPermissions(
         asList(
+          UserPermissions.list().asShiroString(),
           UserPermissions.create().asShiroString(),
+          UserPermissions.read("*").asShiroString(),
+          UserPermissions.delete("*").asShiroString(),
           PermissionPermissions.assign().asShiroString(),
           PermissionPermissions.read().asShiroString()
         ));

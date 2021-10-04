@@ -86,7 +86,14 @@ class CesTokenRealmTest {
     AuthorizationInfo authorizationInfo = realm.doGetAuthorizationInfo(principals);
 
     assertThat(authorizationInfo.getStringPermissions())
-      .contains("user:create", "permission:assign", "permission:read");
+      .contains(
+        "user:list",
+        "user:read:*",
+        "user:create",
+        "user:delete:*",
+        "permission:assign",
+        "permission:read"
+      );
   }
 
   @Test
