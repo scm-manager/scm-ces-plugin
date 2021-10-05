@@ -38,12 +38,7 @@ scmPlugin {
   displayName = "CES Integration Plugin"
   description = "Offers integration into the Cloudogu Ecosystem"
 
-  author = "SCM-Team"
+  author = "Cloudogu GmbH"
   category = "Library"
-
-  openapi {
-    packages = [
-      "com.cloudogu.scm.ces"
-    ]
-  }
+  avatarUrl = '/images/cloudogu-logo.png'
 }

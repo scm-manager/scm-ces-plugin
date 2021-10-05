@@ -89,12 +89,13 @@ public class CesTokenRealm extends AuthorizingRealm {
     CesToken cesToken = (CesToken) token;
     validator.checkToken(cesToken.getCredentials());
     if (!cesToken.getRemoteAddress().equals("127.0.0.1")) {
+      LOG.debug("Rejecting ces token from non-localhost");
       return null;
     }
     SimplePrincipalCollection principalCollection = new SimplePrincipalCollection("ces-service-account", REALM);
     principalCollection.add(MARKER, REALM);
     principalCollection.add(new User("ces-service-account", "CES Service Account User", null), REALM);
-    LOG.info("Creating authentication for ces realm");
+    LOG.debug("Creating authentication for ces realm");
     return new SimpleAuthenticationInfo(principalCollection, null);
   }
 

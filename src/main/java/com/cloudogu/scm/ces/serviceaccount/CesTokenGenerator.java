@@ -57,7 +57,7 @@ class CesTokenGenerator implements WebTokenGenerator {
     String cesToken = request.getHeader(tokenHeader);
     LOG.trace("Got value for header '{}'", tokenHeader);
     if (!Strings.isNullOrEmpty(cesToken)) {
-      LOG.info("Found ces token");
+      LOG.debug("Found ces token");
       return new CesToken(cesToken, request.getRemoteAddr());
     }
     return null;

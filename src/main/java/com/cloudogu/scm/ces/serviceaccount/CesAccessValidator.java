@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Singleton;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
@@ -99,7 +100,17 @@ class CesAccessValidator {
       LOG.trace("Started process");
       process.getOutputStream().close();
       LOG.trace("Closed out");
-      InputStream inputStream = process.getInputStream();
+      handleProcessOutput(process);
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      LOG.error("thread was interrupted", e);
+    } catch (Exception e) {
+      LOG.error("Could not read token from doguctl", e);
+    }
+  }
+
+  private void handleProcessOutput(Process process) throws IOException, InterruptedException {
+    try (InputStream inputStream = process.getInputStream()) {
       LOG.trace("Got input");
       String processOut = new BufferedReader(new InputStreamReader(inputStream, UTF_8)).readLine();
       int exitValue = process.waitFor();
@@ -109,8 +120,6 @@ class CesAccessValidator {
       } else {
         LOG.error("got non-zero exit value ({}) from doguctl call", exitValue);
       }
-    } catch (Exception e) {
-      LOG.error("Could not read token from doguctl", e);
     }
   }
 }
