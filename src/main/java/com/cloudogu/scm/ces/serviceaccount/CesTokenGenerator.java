@@ -22,23 +22,44 @@
  * SOFTWARE.
  */
 
+package com.cloudogu.scm.ces.serviceaccount;
 
-plugins {
-  id 'org.scm-manager.smp' version '0.8.5'
-}
+import com.google.common.base.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import sonia.scm.plugin.Extension;
+import sonia.scm.web.WebTokenGenerator;
 
-dependencies {
-  // define dependencies to other plugins here e.g.:
-  // plugin "sonia.scm.plugins:scm-mail-plugin:2.1.0"
-  // optionalPlugin "sonia.scm.plugins:scm-editor-plugin:2.0.0"
-}
+import javax.servlet.http.HttpServletRequest;
 
-scmPlugin {
-  scmVersion = "2.19.0"
-  displayName = "CES Integration Plugin"
-  description = "Offers integration into the Cloudogu Ecosystem"
+@Extension
+class CesTokenGenerator implements WebTokenGenerator {
 
-  author = "Cloudogu GmbH"
-  category = "Library"
-  avatarUrl = '/images/cloudogu-logo.png'
+  private static final Logger LOG = LoggerFactory.getLogger(CesTokenGenerator.class);
+
+  private final String tokenHeader;
+
+  CesTokenGenerator() {
+    this(System.getenv("CES_TOKEN_HEADER"));
+  }
+
+  CesTokenGenerator(String tokenHeader) {
+    this.tokenHeader = tokenHeader;
+  }
+
+  @Override
+  public CesToken createToken(HttpServletRequest request) {
+    LOG.trace("Try to read token");
+    if (tokenHeader == null) {
+      LOG.warn("Could not read header name for ces token");
+      return null;
+    }
+    String cesToken = request.getHeader(tokenHeader);
+    LOG.trace("Got value for header '{}'", tokenHeader);
+    if (!Strings.isNullOrEmpty(cesToken)) {
+      LOG.debug("Found ces token");
+      return new CesToken(cesToken, request.getRemoteAddr());
+    }
+    return null;
+  }
 }

@@ -22,23 +22,31 @@
  * SOFTWARE.
  */
 
+package com.cloudogu.scm.ces.serviceaccount;
 
-plugins {
-  id 'org.scm-manager.smp' version '0.8.5'
-}
+import org.apache.shiro.authc.AuthenticationToken;
 
-dependencies {
-  // define dependencies to other plugins here e.g.:
-  // plugin "sonia.scm.plugins:scm-mail-plugin:2.1.0"
-  // optionalPlugin "sonia.scm.plugins:scm-editor-plugin:2.0.0"
-}
+public class CesToken implements AuthenticationToken {
 
-scmPlugin {
-  scmVersion = "2.19.0"
-  displayName = "CES Integration Plugin"
-  description = "Offers integration into the Cloudogu Ecosystem"
+  private final String credentials;
+  private final String remoteAddress;
 
-  author = "Cloudogu GmbH"
-  category = "Library"
-  avatarUrl = '/images/cloudogu-logo.png'
+  public CesToken(String credentials, String remoteAddress) {
+    this.credentials = credentials;
+    this.remoteAddress = remoteAddress;
+  }
+
+  @Override
+  public Object getPrincipal() {
+    return null;
+  }
+
+  @Override
+  public String getCredentials() {
+    return credentials;
+  }
+
+  public String getRemoteAddress() {
+    return remoteAddress;
+  }
 }
