@@ -25,7 +25,7 @@ dependencies {
 }
 
 scmPlugin {
-  scmVersion = "2.19.0"
+  scmVersion = "3.0.0"
   displayName = "CES Integration Plugin"
   description = "Offers integration into the Cloudogu Ecosystem"
 

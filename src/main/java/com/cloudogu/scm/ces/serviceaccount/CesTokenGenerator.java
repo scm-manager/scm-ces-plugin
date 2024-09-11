@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 import sonia.scm.plugin.Extension;
 import sonia.scm.web.WebTokenGenerator;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Extension
 class CesTokenGenerator implements WebTokenGenerator {

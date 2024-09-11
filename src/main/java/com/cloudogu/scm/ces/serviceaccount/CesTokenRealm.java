@@ -33,7 +33,7 @@ import sonia.scm.security.PermissionPermissions;
 import sonia.scm.user.User;
 import sonia.scm.user.UserPermissions;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Arrays.asList;
