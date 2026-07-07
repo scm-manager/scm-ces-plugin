@@ -15,7 +15,7 @@
  */
 
 plugins {
-  id 'org.scm-manager.smp' version '0.17.0'
+  id 'org.scm-manager.smp' version '0.20.0'
 }
 
 dependencies {
@@ -26,6 +26,7 @@ dependencies {
 
 scmPlugin {
   scmVersion = "3.0.0"
+  isScm4Compatible = true
   displayName = "CES Integration Plugin"
   description = "Offers integration into the Cloudogu Ecosystem"
 
